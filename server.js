@@ -2,10 +2,10 @@ const express = require('express');
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASS,
-  database: process.env.DB
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASS,
+    database: process.env.DB
 });
 
 connection.connect();
@@ -16,6 +16,14 @@ const port = process.env.PORT || 3000;
 
 app.get('/api/name/:name', (req, res) => {
 
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
+
     let name = req.params.name;
     let results = []
 
@@ -23,9 +31,9 @@ app.get('/api/name/:name', (req, res) => {
         rows.forEach(row => {
             results.push(row);
         });
-        res.json({data: results})
-      })
-    
+        res.json({ data: results })
+    })
+
 });
 
 app.get('*', (req, res) => {
