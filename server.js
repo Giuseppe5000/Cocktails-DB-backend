@@ -1,26 +1,30 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASS,
+  database: process.env.DB
+});
+
+connection.connect();
+
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-const db = new sqlite3.Database('./cocktails.db', sqlite3.OPEN_READONLY, (err) => {
-    if (err) {
-        console.log(err);
-    }
-});
 
 app.get('/api/name/:name', (req, res) => {
 
     let name = req.params.name;
     let results = []
 
-    db.all(`SELECT IDCocktail, Name, Instructions, Ingredients, Thumb FROM Cocktails WHERE Name LIKE ?`, `%${name}%`, (err, rows) => {
+    connection.query(`SELECT IDCocktail, Name, Instructions, Ingredients, Thumb FROM Cocktails WHERE Name LIKE ?`, [`%${name}%`], (err, rows, fields) => {
         rows.forEach(row => {
-            results.push(row)
+            results.push(row);
         });
         res.json({data: results})
-    });
+      })
     
 });
 
